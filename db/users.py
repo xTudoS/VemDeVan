@@ -1,10 +1,14 @@
+import tkinter as tk
+
 class Users:
 
     def __init__(self, email, passwd):
         self.email = email
         self.passwd = passwd
         self.motorista = False
-        self.caixa = 0
+        self.saldo = 0
+        self.saldoStringVar = tk.StringVar()
+        self.saldoStringVar.set(f"Seu Saldo: R${self.saldo:.2f}")
         self.cpf = ''
         self.cnh = ''
         self.telefone = ''

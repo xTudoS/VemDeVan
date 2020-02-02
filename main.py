@@ -1,4 +1,8 @@
 import tkinter as tk
+import re
+from PIL import ImageTk
+from PIL import Image
+
 from home_page import HomePage
 from db import Users
 from control_admin import Painel
@@ -7,6 +11,8 @@ class App(tk.Tk):
     def __init__(self, *args, **kw):
         
         tk.Tk.__init__(self)
+
+        self.regexEmail = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
         self.users = [
             Users(email='a@a.com', passwd='1234'),
@@ -25,13 +31,21 @@ class App(tk.Tk):
         self.geometry(f"800x600+{self.width - 400}+{self.height - 350}")        
         # self.splashScreen = SplashScreen(self)
 
-        self.withdraw()
-        self.painel = Painel(self)
-        self.painel.pack()
+        self.imgBgOriginal = Image.open('img/bg.png')
+        self.imgBgResize = self.imgBgOriginal.resize((800, 600), Image.ANTIALIAS)
+        
+        self.imgBg = ImageTk.PhotoImage(self.imgBgResize)
 
+        self.imgBgLabel = tk.Label(self, image=self.imgBg)
+        self.imgBgLabel.place(x=0, y=0)
+
+        self.withdraw()
         self.screen = HomePage(self)
 
-        
+    def deiconify(self, *args, **kw):
+        super().deiconify()
+        self.painel = Painel(self)
+        self.painel.pack()       
 
     def changeScreen(self, screen):
         self.screen.destroy()
@@ -41,6 +55,11 @@ class App(tk.Tk):
     def validarLogin(self):
         email = self.email.get().strip()
         passwd = self.passwd.get()
+
+        emailValido = re.match(self.regexEmail, email)
+
+        if emailValido == None or (0 == len(passwd) > 8):
+            return None
 
         user = Users(email=email, passwd=passwd)
 
