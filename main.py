@@ -1,6 +1,7 @@
 import tkinter as tk
 from home_page import HomePage
 from db import Users
+from control_admin import Painel
 
 class App(tk.Tk):
     def __init__(self, *args, **kw):
@@ -10,6 +11,8 @@ class App(tk.Tk):
         self.users = [
             Users(email='a@a.com', passwd='1234'),
         ]
+
+        self.user = None
         
         self.email = tk.StringVar()
         self.passwd = tk.StringVar()
@@ -19,17 +22,16 @@ class App(tk.Tk):
         
         self.width = self.winfo_screenwidth()//2
         self.height = self.winfo_screenheight()//2
-        self.geometry(f"800x600+{self.width - 400}+{self.height - 350}")
+        self.geometry(f"800x600+{self.width - 400}+{self.height - 350}")        
+        # self.splashScreen = SplashScreen(self)
 
         self.withdraw()
-        # self.splashScreen = SplashScreen(self)
+        self.painel = Painel(self)
+        self.painel.pack()
+
         self.screen = HomePage(self)
 
-        self.title('Painel de Controle - Vem de Van')
-        self['bg'] = 'black'
-
-        button = tk.Button(text='Close', command=lambda : exit())
-        button.pack()
+        
 
     def changeScreen(self, screen):
         self.screen.destroy()
@@ -44,6 +46,7 @@ class App(tk.Tk):
 
         for u in self.users:
             if u.email == user.email and u.passwd == user.passwd:
+                self.user = user
                 return True
 
 
