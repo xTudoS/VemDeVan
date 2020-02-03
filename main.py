@@ -28,11 +28,11 @@ class App(tk.Tk):
         
         self.width = self.winfo_screenwidth()//2
         self.height = self.winfo_screenheight()//2
-        self.geometry(f"800x600+{self.width - 400}+{self.height - 350}")        
+        self.geometry(f"360x640+{self.width - 400}+{self.height - 350}")        
         # self.splashScreen = SplashScreen(self)
 
         self.imgBgOriginal = Image.open('img/bg.png')
-        self.imgBgResize = self.imgBgOriginal.resize((800, 600), Image.ANTIALIAS)
+        self.imgBgResize = self.imgBgOriginal.resize((360, 640), Image.ANTIALIAS)
         
         self.imgBg = ImageTk.PhotoImage(self.imgBgResize)
 
@@ -45,7 +45,7 @@ class App(tk.Tk):
     def deiconify(self, *args, **kw):
         super().deiconify()
         self.painel = Painel(self)
-        self.painel.pack()       
+        self.painel.pack(pady=10)       
 
     def changeScreen(self, screen):
         self.screen.destroy()

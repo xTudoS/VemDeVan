@@ -18,5 +18,5 @@ class HomePageScreen(tk.Frame):
         self.imgSplashScreenLabel.place(x=0, y=0)
 
 
-        self.button = tk.Button(self, text="Abrir Painel de Controle", command=lambda : master.changeScreen(Login(master)))
+        self.button = tk.Button(self, text="Acessar App", command=lambda : master.changeScreen(Login(master)))
         self.button.place(x=110, y=50)
