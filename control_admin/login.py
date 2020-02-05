@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 
 from PIL import ImageTk
 from PIL import Image
@@ -60,3 +61,6 @@ class Login(tk.Toplevel):
         if userValido:
             self.destroy(exitApp=False)
             self.master.deiconify()
+        
+        else:
+            messagebox.showwarning('Warning', 'Email e senha inválidos')

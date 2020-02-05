@@ -1,6 +1,12 @@
 import tkinter as tk
 from .form_destino import FormDestino
+from tkinter import messagebox
+
+
 # from .viagem import Viagem
+
+# import psycopg2.extras
+
 
 from paho.mqtt import subscribe
 import threading
@@ -16,7 +22,10 @@ class PainelUsuario(tk.Frame):
         self.msgVariable = tk.StringVar()
         self.msgVariable.set('Onde você está?')
 
-        # self.confirmacaoViagem = True
+        self.rua = tk.StringVar()
+        self.num = tk.StringVar()
+        self.city = tk.StringVar()
+        self.estado = tk.StringVar()
 
         self.master = master
 
@@ -34,6 +43,11 @@ class PainelUsuario(tk.Frame):
         self.buttonAvancar.pack()
 
     def next(self):
+        
+        if len(self.rua.get()) == 0 or len(self.num.get()) == 0 or len(self.estado.get()) == 0:
+            messagebox.showwarning('Warning', 'Nenhum campo pode ficar em branco')
+            return None
+
         if self.selectDestino:
             self.msgVariable.set('Para onde deseja ir?')
             for wid in self.formDestino.winfo_children():
@@ -56,21 +70,31 @@ class PainelUsuario(tk.Frame):
 
             self.update()
             
-            subscribe.simple('motorista')
+            m = subscribe.simple('motorista')
+            cpf_motorista = m.payload.decode("utf-8") 
+            
+            self.master.cur.execute(f"""select nome, placa from usuario where usuario.cpf = '{cpf_motorista}'""")
+            self.motorista = self.master.cur.fetchone()
+            
+            print(self.motorista)
 
             # self.viagem = Viagem(self)
 
-            self.confirmacaoViagem = tk.Label(self, bg='#9EC496', text=f'O motorista {"jooj"} confirmou a viagem. \nAguarde-o no local informado.\nPlaca do veículo {"5asd"}')
+            self.confirmacaoViagem = tk.Label(self, bg='#9EC496', text=f'O motorista {self.motorista[0]} confirmou a viagem. \nAguarde-o no local informado.\nPlaca do veículo {self.motorista[1]}')
             self.confirmacaoViagem.pack()
             self.update()
 
             subscribe.simple('motorista')
 
 
-            self.confirmacaoMotorista = tk.Label(self, bg='#9EC496', text=f'O motorista {"jooj"} já está no local informado')
+            self.confirmacaoMotorista = tk.Label(self, bg='#9EC496', text=f'O motorista {self.motorista[0]} já está no local informado')
             self.confirmacaoMotorista.pack()
             self.update()
             
             
             # self.textLabel.pack(fill=tk.X)
-        
+
+    def waitmsg(self):
+        pass
+
+    

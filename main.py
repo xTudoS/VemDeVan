@@ -3,6 +3,10 @@ import re
 from PIL import ImageTk
 from PIL import Image
 
+import psycopg2
+from psycopg2.extras import DictCursor
+
+
 from home_page import HomePage
 from db import Users
 from control_admin import PainelUsuario
@@ -14,12 +18,11 @@ class App(tk.Tk):
         tk.Tk.__init__(self)
 
         self.mqtt = MQTT()
-
+        self.conn = psycopg2.connect("dbname='vemdevan' user='postgres' host='localhost' password='m249sopmod'")
+        self.cur = self.conn.cursor(cursor_factory=DictCursor)
         self.regexEmail = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
-        self.users = [
-            Users(email='a@a.com', passwd='1234'),
-        ]
+        # print(self.users)
 
         self.user = None
         
@@ -69,11 +72,15 @@ class App(tk.Tk):
 
         user = Users(email=email, passwd=passwd)
 
-        for u in self.users:
-            if u.email == user.email and u.passwd == user.passwd:
-                self.user = user
-                return True
+        self.cur.execute(f"""SELECT email, senha from usuario where email = '{user.email}' and senha = '{user.passwd}'""")
 
+        self.users = self.cur.fetchall()
+
+        if len(self.users) == 1:
+            self.user = user
+
+            return True
+            
 
 if __name__ == "__main__":
     # root = tk.Tk()
