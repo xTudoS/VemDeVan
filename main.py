@@ -23,6 +23,7 @@ class App(tk.Tk):
         # print(self.users)
 
         self.user = None
+        self.trajetos = []
         
         self.email = tk.StringVar()
         self.passwd = tk.StringVar()
@@ -70,11 +71,13 @@ class App(tk.Tk):
 
         user = Users(email=email, passwd=passwd)
 
-        cur = self.db.execute(f"""SELECT email, senha from usuario where email = '{user.email}' and senha = '{user.passwd}'""")
+        cur = self.db.execute(f"""SELECT cpf, email, senha from usuario where email = '{user.email}' and senha = '{user.passwd}'""")
 
         self.users = cur[0]
 
         if len(self.users) == 1:
+            cpf = self.users[0][0]
+            user.cpf = cpf
             self.user = user
 
             return True

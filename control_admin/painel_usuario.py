@@ -2,14 +2,7 @@ import tkinter as tk
 from .form_destino import FormDestino
 from tkinter import messagebox
 
-
-# from .viagem import Viagem
-
-# import psycopg2.extras
-
-
 from paho.mqtt import subscribe
-import threading
 
 
 class PainelUsuario(tk.Frame):
@@ -23,7 +16,7 @@ class PainelUsuario(tk.Frame):
         self.msgVariable.set('Onde você está?')
 
         self.rua = tk.StringVar()
-        self.num = tk.StringVar()
+        self.num = tk.IntVar()
         self.city = tk.StringVar()
         self.estado = tk.StringVar()
 
@@ -43,10 +36,23 @@ class PainelUsuario(tk.Frame):
         self.buttonAvancar.pack()
 
     def next(self):
+
+        rua = self.rua.get()
+        num = self.num.get()
+        city = self.city.get()
+        estado = self.estado.get()
         
-        if len(self.rua.get()) == 0 or len(self.num.get()) == 0 or len(self.estado.get()) == 0:
+        if len(rua) == 0 or num == 0 or len(city) == 0 or len(estado) == 0:
             messagebox.showwarning('Warning', 'Nenhum campo pode ficar em branco')
             return None
+
+        local = self.master.db.execute(f"select id from local where local.rua = '{rua}' and local.numero = '{num}' and local.cidade = '{city}' and local.estado = '{estado}'")[0]
+        if len(local) == 0:
+            self.master.db.execute(f"insert into local(rua, numero, cidade, estado) values('{rua}', '{num}', '{city}', '{estado}')", insert=True)
+            local = self.master.db.execute(f"select id from local where local.rua = '{rua}' and local.numero = '{num}' and local.cidade = '{city}' and local.estado = '{estado}'")[0]
+        
+        # print(local)
+        self.master.trajetos.append(local[:])
 
         if self.selectDestino:
             self.msgVariable.set('Para onde deseja ir?')
@@ -72,29 +78,23 @@ class PainelUsuario(tk.Frame):
             
             m = subscribe.simple('motorista')
             cpf_motorista = m.payload.decode("utf-8") 
-            
-            self.master.cur.execute(f"""select nome, placa from usuario where usuario.cpf = '{cpf_motorista}'""")
-            self.motorista = self.master.cur.fetchone()
-            
-            print(self.motorista)
+            self.motorista = self.master.db.execute(f"""select nome, veiculo_placa from usuario where usuario.cpf = '{cpf_motorista}'""")[0]
 
-            # self.viagem = Viagem(self)
+            self.master.db.execute(f"insert into trajeto(local_chegada, local_saida, passageiro_cpf, motorista_cpf) values ({self.master.trajetos[1][0][0]}, {self.master.trajetos[0][0][0]}, '{self.master.user.cpf}', '{cpf_motorista}')", insert=True)
 
-            self.confirmacaoViagem = tk.Label(self, bg='#9EC496', text=f'O motorista {self.motorista[0]} confirmou a viagem. \nAguarde-o no local informado.\nPlaca do veículo {self.motorista[1]}')
+
+            self.confirmacaoViagem = tk.Label(self, bg='#9EC496', text=f'O motorista {self.motorista[0][0]} confirmou a viagem. \nAguarde-o no local informado.\nPlaca do veículo {self.motorista[0][1]}')
             self.confirmacaoViagem.pack()
             self.update()
 
             subscribe.simple('motorista')
 
 
-            self.confirmacaoMotorista = tk.Label(self, bg='#9EC496', text=f'O motorista {self.motorista[0]} já está no local informado')
+            self.confirmacaoMotorista = tk.Label(self, bg='#9EC496', text=f'O motorista {self.motorista[0][0]} já está no local informado')
             self.confirmacaoMotorista.pack()
             self.update()
             
             
-            # self.textLabel.pack(fill=tk.X)
 
-    def waitmsg(self):
-        pass
 
     
