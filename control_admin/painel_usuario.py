@@ -38,11 +38,15 @@ class PainelUsuario(tk.Frame):
     def next(self):
 
         rua = self.rua.get()
-        num = self.num.get()
+        try:
+            num = self.num.get()
+        except:
+            num = None
+            
         city = self.city.get()
         estado = self.estado.get()
         
-        if len(rua) == 0 or num == 0 or len(city) == 0 or len(estado) == 0:
+        if len(rua) == 0 or num == None or len(city) == 0 or len(estado) == 0:
             messagebox.showwarning('Warning', 'Nenhum campo pode ficar em branco')
             return None
 
@@ -94,7 +98,13 @@ class PainelUsuario(tk.Frame):
             self.confirmacaoMotorista.pack()
             self.update()
             
-            
+            subscribe.simple('motorista')
 
+            self.confirmacaoMotorista = tk.Label(self, bg='#9EC496', text=f'Viagem concluída com sucesso')
+            self.confirmacaoMotorista.pack()
+            self.update()
 
-    
+            self.buttonReturn = tk.Button(self, text="Voltar", command= lambda :self.master.changeFrame(self))
+            self.buttonReturn.pack(pady=20)
+
+            # self.master.changeFrame(self)

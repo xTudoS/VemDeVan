@@ -4,7 +4,7 @@ from psycopg2.extras import DictCursor
 class DB:
 
     def conexao(self):
-        conn = psycopg2.connect("dbname='vemdevan' user='postgres' host='localhost' password='1234'")
+        conn = psycopg2.connect("dbname='vemdevan' user='postgres' host='localhost' password='m249sopmod'")
         return conn
     
     def execute(self, query, insert=False):
@@ -19,7 +19,7 @@ class DB:
             else:
                 data = cur.fetchall()
             error = False
-        except:
+        except Exception:
             conn.rollback()
         finally:
             conn.close()

@@ -22,6 +22,7 @@ class Register(tk.Toplevel):
         # self.data_nasc = True
 
         self.cnh = tk.StringVar()
+        self.placa = tk.StringVar()
 
         self.resizable(width=False, height=False)
         self.title('Vem de Van')
@@ -54,6 +55,10 @@ class Register(tk.Toplevel):
 
         self.cnhLabel = tk.Label(self.form, text="CNH:")
         self.cnhEntry = tk.Entry(self.form, textvariable=self.cnh)
+
+        
+        self.placaLabel = tk.Label(self.form, text="Placa do veículo:")
+        self.placaEntry = tk.Entry(self.form, textvariable=self.placa)
         
         
 
@@ -69,6 +74,8 @@ class Register(tk.Toplevel):
             try:
                 self.cnhLabel.grid_forget()
                 self.cnhEntry.grid_forget()
+                self.placaLabel.grid_forget()
+                self.placaEntry.grid_forget()
             except:
                 pass
 
@@ -85,6 +92,9 @@ class Register(tk.Toplevel):
             self.cnhLabel.grid(column=0, row=7)
             self.cnhEntry.grid(column=1, row=7)
 
+            self.placaLabel.grid(column=0, row=8)
+            self.placaEntry.grid(column=1, row=8)
+
         self.update()
 
     def register(self):
@@ -95,6 +105,9 @@ class Register(tk.Toplevel):
         nome = self.nome.get()
         cnh = None
         data_nasc = self.data_nascDateEntry.get()
+        placa = self.placa.get()
+
+        print(placa)
         
         error = False
 
@@ -108,8 +121,9 @@ class Register(tk.Toplevel):
 
         if len(cpf) == 11 and len(telefone) == 11 and len(nome) <= 50 and len(data_nasc) == 10:
             if self.motorista.get():
-                if len(cnh) == 11:
-                    error =self.master.db.execute(f"insert into usuario values ('{cpf}', '{telefone}', '{nome}', '{data_nasc}', '{email}', '{passwd}', '{cnh}')", insert=True)[1]
+                if len(cnh) == 11 and len(placa) == 7:
+                    self.master.db.execute(f"insert into veiculo values ('{placa}')", insert=True)
+                    error = self.master.db.execute(f"insert into usuario values ('{cpf}', '{telefone}', '{nome}', '{data_nasc}', '{email}', '{passwd}', '{cnh}', '{placa}')", insert=True)[1]
                 else:
                     messagebox.showwarning('Warning', 'Erro ao se cadastrar!\nVerifique os dados informados e tente novamente.')
                     return None
@@ -123,6 +137,8 @@ class Register(tk.Toplevel):
             messagebox.showwarning('Warning', 'Ops! Já existe um usuário com esses dados cadastrados')  
             return None 
         messagebox.showwarning('Warning', 'Usuário cadastrado com sucesso')
+
+        self.destroy(exitApp=False)
                 
 
 
@@ -130,14 +146,3 @@ class Register(tk.Toplevel):
         super().destroy()
         if exitApp:
             exit(0)
-
-    # def login(self):
-
-    #     userValido = self.master.validarLogin()
-
-    #     if userValido:
-    #         self.destroy(exitApp=False)
-    #         self.master.deiconify()
-        
-    #     else:
-    #         messagebox.showwarning('Warning', 'Email e senha inválidos')

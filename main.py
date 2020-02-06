@@ -2,7 +2,7 @@ import tkinter as tk
 import re
 from PIL import ImageTk
 from PIL import Image
-
+from tkinter import messagebox
 
 from home_page import HomePage
 from db import DB
@@ -48,12 +48,15 @@ class App(tk.Tk):
         self.screen = HomePage(self)
 
     def deiconify(self, *args, **kw):
+        self.painelUsuario = PainelUsuario(self)
+        self.painelUsuario.pack(pady=10)
         super().deiconify()
-        if self.user.motorista:
-            pass
-        else:
-            self.painelUsuario = PainelUsuario(self)
-            self.painelUsuario.pack(pady=10)       
+
+    def changeFrame(self, frame):
+        self.painelUsuario.destroy()
+        self.painelUsuario = PainelUsuario(self)
+        self.painelUsuario.pack(pady=10)
+
 
     def changeScreen(self, screen):
         self.screen.destroy()
@@ -71,14 +74,20 @@ class App(tk.Tk):
 
         user = Users(email=email, passwd=passwd)
 
-        cur = self.db.execute(f"""SELECT cpf, email, senha from usuario where email = '{user.email}' and senha = '{user.passwd}'""")
+        cur = self.db.execute(f"""SELECT cpf, email, senha, cnh from usuario where email = '{user.email}' and senha = '{user.passwd}'""")
 
         self.users = cur[0]
 
         if len(self.users) == 1:
             cpf = self.users[0][0]
+            motorista = self.users[0][3]
             user.cpf = cpf
+            user.motorista = motorista
             self.user = user
+
+            if self.user.motorista:
+                return False
+
 
             return True
             

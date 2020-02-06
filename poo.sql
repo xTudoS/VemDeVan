@@ -1,10 +1,7 @@
-create database VemDeVan;
+-- create database VemDeVan;
 
 create table veiculo(
 	placa varchar(7) not null,
-	marca varchar(12) not null,
-	modelo varchar(15) not null,
-	cor varchar(10),
 	primary key(placa)
 );
 

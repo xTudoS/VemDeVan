@@ -53,7 +53,7 @@ class Login(tk.Toplevel):
 
         self.buttonRegister = tk.Button(self, text="Registrar", command=self.registerFrame)
 
-        self.buttonRegister.place(x=160, y=350)
+        self.buttonRegister.place(x=162, y=350)
     
     def destroy(self, exitApp=True, *args, **kw):
         super().destroy()
@@ -70,6 +70,8 @@ class Login(tk.Toplevel):
         if userValido:
             self.destroy(exitApp=False)
             self.master.deiconify()
-        
+        elif userValido == False:
+            messagebox.showwarning('Warning', "Erro ao acessar o painel!")
+
         else:
             messagebox.showwarning('Warning', 'Email e senha inválidos')
