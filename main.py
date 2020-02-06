@@ -16,7 +16,6 @@ class App(tk.Tk):
         tk.Tk.__init__(self)
 
         self.mqtt = MQTT()
-        # self.conn = psycopg2.connect("dbname='vemdevan' user='postgres' host='localhost' password='km249sopmod'")
         self.db = DB()
         self.regexEmail = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
