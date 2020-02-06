@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 
+from .register import Register
+
 from PIL import ImageTk
 from PIL import Image
 
@@ -46,13 +48,20 @@ class Login(tk.Toplevel):
         self.passwdLabel.place(x=90, y=290)   
         self.passwdEntry.place(x=130, y=290)
 
-        self.button = tk.Button(self, text="Login", command=self.login)
-        self.button.place(x=170, y=320)
+        self.buttonLogin = tk.Button(self, text="Login", command=self.login)
+        self.buttonLogin.place(x=170, y=320)
+
+        self.buttonRegister = tk.Button(self, text="Registrar", command=self.registerFrame)
+
+        self.buttonRegister.place(x=160, y=350)
     
     def destroy(self, exitApp=True, *args, **kw):
         super().destroy()
         if exitApp:
             exit(0)
+
+    def registerFrame(self):
+        self.register = Register(self.master)
 
     def login(self):
 

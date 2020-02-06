@@ -3,11 +3,9 @@ import re
 from PIL import ImageTk
 from PIL import Image
 
-import psycopg2
-from psycopg2.extras import DictCursor
-
 
 from home_page import HomePage
+from db import DB
 from db import Users
 from control_admin import PainelUsuario
 from mqtt import MQTT
@@ -18,8 +16,8 @@ class App(tk.Tk):
         tk.Tk.__init__(self)
 
         self.mqtt = MQTT()
-        self.conn = psycopg2.connect("dbname='vemdevan' user='postgres' host='localhost' password='m249sopmod'")
-        self.cur = self.conn.cursor(cursor_factory=DictCursor)
+        # self.conn = psycopg2.connect("dbname='vemdevan' user='postgres' host='localhost' password='km249sopmod'")
+        self.db = DB()
         self.regexEmail = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
         # print(self.users)
@@ -72,9 +70,9 @@ class App(tk.Tk):
 
         user = Users(email=email, passwd=passwd)
 
-        self.cur.execute(f"""SELECT email, senha from usuario where email = '{user.email}' and senha = '{user.passwd}'""")
+        cur = self.db.execute(f"""SELECT email, senha from usuario where email = '{user.email}' and senha = '{user.passwd}'""")
 
-        self.users = self.cur.fetchall()
+        self.users = cur[0]
 
         if len(self.users) == 1:
             self.user = user
